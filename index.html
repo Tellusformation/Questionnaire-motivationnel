@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionnaire motivationnel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E8EAE6;
+    --ink:#20242B;
+    --ink-soft:#5B6169;
+    --line:#D2D6CF;
+    --card:#F5F6F2;
+    --accent:#3D5A73;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:0 20px 80px;
+  }
+  header.hero{
+    padding:44px 0 24px;
+  }
+  header.hero h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:500;
+    font-size:clamp(28px,6.5vw,40px);
+    line-height:1.1;
+    margin:0 0 18px;
+    letter-spacing:-0.01em;
+  }
+  header.hero p{
+    color:var(--ink-soft);
+    font-size:15px;
+    line-height:1.55;
+    margin:0 0 14px;
+  }
+  header.hero .intro-label{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    color:var(--ink);
+    font-size:15px;
+    margin:0 0 8px;
+  }
+  header.hero .byline{
+    margin-top:6px;
+    font-size:13px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line);
+    padding-top:12px;
+  }
+
+  .progress-rail{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:var(--paper);
+    padding:14px 0 10px;
+  }
+  .progress-track{
+    height:3px;
+    background:var(--line);
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .25s ease;
+  }
+  .progress-label{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:8px;
+  }
+
+  .scale-legend{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:2px 2px 20px;
+  }
+
+  .question{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:20px 20px 18px;
+    margin-bottom:12px;
+  }
+  .question .num{
+    font-family:'Fraunces', serif;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .question .text{
+    font-size:15.5px;
+    line-height:1.45;
+    margin-bottom:16px;
+  }
+  .scale{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+  }
+  .scale button{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    font-weight:500;
+    padding:11px 4px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:3px;
+    cursor:pointer;
+    line-height:1.3;
+  }
+  .scale button .n{
+    font-family:'Fraunces', serif;
+    font-size:16px;
+    display:block;
+    margin-bottom:2px;
+  }
+  .scale button:hover{
+    border-color:var(--accent);
+  }
+  .scale button.selected{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  .submit-zone{
+    position:sticky;
+    bottom:0;
+    padding:16px 0 24px;
+    background:linear-gradient(to top, var(--paper) 60%, rgba(232,234,230,0));
+  }
+  .submit-btn{
+    width:100%;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    padding:16px;
+    border-radius:3px;
+    border:none;
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+  }
+  .submit-btn:disabled{
+    background:var(--line);
+    color:var(--ink-soft);
+    cursor:not-allowed;
+  }
+  .submit-hint{
+    text-align:center;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:10px;
+  }
+
+  /* Results */
+  #results{display:none;}
+  .section-sub{
+    color:var(--ink-soft);
+    font-size:14px;
+    margin:0 0 22px;
+    line-height:1.5;
+  }
+  table.results-table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--card);
+    border:1px solid var(--line);
+    font-size:14.5px;
+  }
+  table.results-table th{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    text-align:left;
+    font-size:13px;
+    color:var(--ink-soft);
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  table.results-table td{
+    padding:12px;
+    border-bottom:1px solid var(--line);
+    vertical-align:middle;
+  }
+  table.results-table tr:last-child td{
+    border-bottom:none;
+  }
+  table.results-table td.famille{
+    font-weight:600;
+    color:var(--ink);
+  }
+  table.results-table td.total{
+    font-family:'Fraunces', serif;
+    font-size:17px;
+    text-align:right;
+    white-space:nowrap;
+  }
+  table.results-table td.total .max{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Sans', sans-serif;
+  }
+
+  .restart-zone{
+    margin-top:28px;
+  }
+  .restart-btn{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    padding:11px 18px;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .restart-btn:hover{
+    border-color:var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="form-view">
+  <header class="hero">
+    <h1>Questionnaire motivationnel</h1>
+    <p class="intro-label">Commentaires :</p>
+    <p>Ce questionnaire a pour but de vous aider à cerner vos principales motivations du point de vue de la nature des satisfactions recherchées.</p>
+    <p>Pour que ce questionnaire puisse donner lieu à une interprétation correcte, il faut indiquer les situations que l'on recherche délibérément et non pas celles que l'on ne recherche pas, mais qui procurent néanmoins des satisfactions lorsqu'elles se produisent.</p>
+    <p>Dans vos activités professionnelles ou privées, est ce que vous recherchez particulièrement (note 2), recherchez occasionnellement (note 1) ou ne recherchez pas (note 0), les situations dans lesquelles :</p>
+  </header>
+
+  <div class="progress-rail">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-label" id="progress-count">0 / 32 propositions répondues</div>
+  </div>
+
+  <div class="scale-legend"><span>0 · ne recherche pas</span><span>2 · recherche particulièrement</span></div>
+
+  <div id="questions"></div>
+
+  <div class="submit-zone">
+    <button class="submit-btn" id="submit-btn" disabled>Voir mon résultat</button>
+    <div class="submit-hint" id="submit-hint">Répondez aux 32 propositions pour continuer</div>
+  </div>
+</div>
+
+<div class="wrap" id="results">
+  <header class="hero" style="padding-bottom:0;">
+    <h1>Votre résultat</h1>
+  </header>
+  <p class="section-sub">C'est l'ensemble des huit notes ci-dessous (sans les additionner entre elles) qui représente votre profil motivationnel du point de vue de la nature des satisfactions que vous recherchez.</p>
+
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>Famille de Motivation</th>
+        <th>Motivation</th>
+        <th style="text-align:right;">Total</th>
+      </tr>
+    </thead>
+    <tbody id="results-body"></tbody>
+  </table>
+
+  <div class="restart-zone">
+    <button class="restart-btn" id="restart-btn">Recommencer le questionnaire</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {id:1,  text:"Vous devez vendre quelque chose à quelqu'un ;"},
+  {id:2,  text:"Vous avez la possibilité de découvrir, de comprendre, d'apprendre des choses nouvelles ;"},
+  {id:3,  text:"Vous avez la possibilité de développer des relations de sympathie, d'amitié ou de camaraderie avec d'autres personnes ;"},
+  {id:4,  text:"Vous avez la possibilité de progresser et de vous améliorer ;"},
+  {id:5,  text:"Vous devez persuader, convaincre quelqu'un de faire ou d'accepter quelque chose ;"},
+  {id:6,  text:"Vous pouvez venir en aide à d'autres personnes ;"},
+  {id:7,  text:"Vous pouvez développer avec d'autres personnes, des relations basées sur la confiance, la bienveillance et l'estime réciproque ;"},
+  {id:8,  text:"Vous avez la possibilité de vous épanouir, de devenir vous-même ;"},
+  {id:9,  text:"Vous pouvez vous occuper d'objets que vous aimez, ou auxquels vous vous intéressez particulièrement (objets d'art, livres, photo…)"},
+  {id:10, text:"Vous pouvez consacrer votre temps et votre énergie à des réalisations concrètes d'envergures ;"},
+  {id:11, text:"Vous avez la possibilité de trouver des idées nouvelles, de découvrir des solutions nouvelles, d'inventer des objets, des produits ou services nouveaux ;"},
+  {id:12, text:"Vous avez des objectifs précis et vous êtes pleinement responsable de les atteindre ;"},
+  {id:13, text:"Vous pouvez voir le résultat concret de vos efforts ;"},
+  {id:14, text:"Vous devez utiliser votre aptitude aux relations humaines pour réussir des missions difficiles, ou pour atteindre des objectifs élevés ;"},
+  {id:15, text:"Vous pouvez démontrer votre compétence, vos qualités, votre intelligence, votre efficacité, vous mettre en valeur ;"},
+  {id:16, text:"Vous pouvez satisfaire votre goût de l'aventure ;"},
+  {id:17, text:"Votre séduction, votre charme, votre charisme vous permettent d'influencer les autres pour atteindre vos objectifs ;"},
+  {id:18, text:"Vous pouvez prouver que vous êtes compétitif, que vous êtes capable de performances élevées ;"},
+  {id:19, text:"Vous pouvez donner libre cours à vos goûts, à vos désirs, à vos sentiments et à vos émotions ;"},
+  {id:20, text:"Vous avez la possibilité de transformer vos idées en actes ;"},
+  {id:21, text:"Vous pouvez libérer votre véritable potentiel ;"},
+  {id:22, text:"Vous pouvez consacrer votre activité à des objets ou à des produits qui vous passionnent ;"},
+  {id:23, text:"Vous avez la possibilité de démontrer que vous avez raison ;"},
+  {id:24, text:"Vous pouvez exprimer vos conceptions esthétiques, votre vision personnelle du monde et de la vie ;"},
+  {id:25, text:"Vous avez la possibilité de chercher des \"trésors\" : idées astucieuses permettant de gagner de l'argent, solutions simples à des problèmes compliqués…"},
+  {id:26, text:"Vous pouvez exprimer les valeurs auxquelles vous croyez ;"},
+  {id:27, text:"Vous pouvez évoluer dans un environnement culturel, géographique, ou humain auquel vous êtes attaché(e) ou qui vous attire ;"},
+  {id:28, text:"Vous avez la possibilité de surmonter des difficultés personnelles, ou de résoudre des problèmes personnels ;"},
+  {id:29, text:"Vous pouvez aider les autres à progresser et à s'épanouir ;"},
+  {id:30, text:"Vous pouvez vous occuper d'objets, de produits ou d'activités que vous \"sentez\" particulièrement bien ;"},
+  {id:31, text:"Vous pouvez faire reconnaître votre valeur professionnelle ;"},
+  {id:32, text:"Vous pouvez agir à votre façon, comme vous le sentez ;"}
+];
+
+// Famille de Motivation / Motivation / Questions correspondantes
+const RESULT_ROWS = [
+  { famille:"NARCISSIQUE", motivation:"Expression de Soi",              qids:[19,24,26,32], firstOfFamily:true,  familyRowSpan:2 },
+  { famille:"NARCISSIQUE", motivation:"Réalisation de Soi",             qids:[4,8,21,28],   firstOfFamily:false },
+  { famille:"AFFECTIVE",   motivation:"Affective",                      qids:[3,6,7,29],    firstOfFamily:true,  familyRowSpan:2 },
+  { famille:"AFFECTIVE",   motivation:"Recherche de Reconnaissance",    qids:[15,18,23,31], firstOfFamily:false },
+  { famille:"CONCRETE",    motivation:"Réalisation-action sur le réel", qids:[10,12,13,20], firstOfFamily:true,  familyRowSpan:4 },
+  { famille:"CONCRETE",    motivation:"Réalisation-action sur les autres", qids:[1,5,14,17], firstOfFamily:false },
+  { famille:"CONCRETE",    motivation:"Exploration Découverte Invention", qids:[2,11,16,25], firstOfFamily:false },
+  { famille:"CONCRETE",    motivation:"Amour des objets",               qids:[9,22,27,30],  firstOfFamily:false }
+];
+
+const answers = {};
+
+function renderQuestions(){
+  const container = document.getElementById('questions');
+  container.innerHTML = QUESTIONS.map(q => `
+    <div class="question" data-qid="${q.id}">
+      <div class="num">Proposition ${q.id} / 32</div>
+      <div class="text">${q.text}</div>
+      <div class="scale">
+        ${[0,1,2].map(v => `<button type="button" data-value="${v}" onclick="selectAnswer(${q.id}, ${v}, this)"><span class="n">${v}</span></button>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectAnswer(qid, value, btn){
+  answers[qid] = value;
+  const scale = btn.parentElement;
+  [...scale.children].forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateProgress();
+}
+
+function updateProgress(){
+  const count = Object.keys(answers).length;
+  document.getElementById('progress-fill').style.width = (count/32*100) + '%';
+  document.getElementById('progress-count').textContent = `${count} / 32 propositions répondues`;
+  const submitBtn = document.getElementById('submit-btn');
+  const hint = document.getElementById('submit-hint');
+  if(count === 32){
+    submitBtn.disabled = false;
+    hint.textContent = "Toutes les propositions ont une réponse";
+  } else {
+    submitBtn.disabled = true;
+    hint.textContent = `Répondez aux ${32-count} propositions restantes pour continuer`;
+  }
+}
+
+function showResults(){
+  const body = document.getElementById('results-body');
+  body.innerHTML = RESULT_ROWS.map(row => {
+    const total = row.qids.reduce((sum, qid) => sum + answers[qid], 0);
+    const familyCell = row.firstOfFamily
+      ? `<td class="famille" rowspan="${row.familyRowSpan}">${row.famille}</td>`
+      : '';
+    return `
+      <tr>
+        ${familyCell}
+        <td>${row.motivation}</td>
+        <td class="total">${total} <span class="max">/ 8</span></td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('form-view').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+document.getElementById('submit-btn').addEventListener('click', showResults);
+
+document.getElementById('restart-btn').addEventListener('click', () => {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  renderQuestions();
+  updateProgress();
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('form-view').style.display = 'block';
+  window.scrollTo(0,0);
+});
+
+renderQuestions();
+</script>
+
+</body>
+</html>
